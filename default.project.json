@@ -1,0 +1,45 @@
+{
+	"name": "Gun-System",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$path": "src/Shared",
+			"ModuleLoader": {
+				"$path": "src/Loader/ModuleLoader.luau",
+				"ActorForClient": {
+					"$className": "Actor",
+					"ParallelStart": {
+						"$path": "src/Loader/ParallelStart.client.luau"
+					}
+				},
+				"ActorForServer": {
+					"$className": "Actor",
+					"ParallelStart": {
+						"$path": "src/Loader/ParallelStart.server.luau"
+					}
+				}
+			},
+			"ParallelModuleLoader": {
+				"$path": "src/Loader/ParallelModuleLoader.luau"
+			}
+		},
+		"ServerScriptService": {
+			"Start": {
+				"$path": "src/Loader/Start.server.luau",
+				"Services": {
+					"$path": "src/Server"
+				}
+			}
+		},
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"Start": {
+					"$path": "src/Loader/Start.client.luau",
+					"Handlers": {
+						"$path": "src/Client"
+					}
+				}
+			}
+		}
+	}
+}

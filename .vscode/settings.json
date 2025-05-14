@@ -1,0 +1,21 @@
+{
+	"stylua.targetReleaseVersion": "latest",
+	"cSpell.words": [
+		"errorft",
+		"getmetatable",
+		"ipairs",
+		"Keypoint",
+		"metamethods",
+		"metatable",
+		"metatabled",
+		"newindex",
+		"NUMPLAYERS",
+		"rawget",
+		"rawset",
+		"sleitnick",
+		"stravant",
+		"unregisters",
+		"varargs",
+		"WAITFORCHILD"
+	]
+}
