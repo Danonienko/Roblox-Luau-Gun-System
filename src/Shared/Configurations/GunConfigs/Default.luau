@@ -2,6 +2,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local GunEnums = require(ReplicatedStorage.Types.Enums.GunEnums)
 local GunTypes = require(ReplicatedStorage.Types.GunTypes)
 
 local config: GunTypes.GunConfig = {
@@ -14,6 +15,8 @@ local config: GunTypes.GunConfig = {
 	MaxReserve = 300,
 	ReloadSpeed = 1,
 	BulletsPerShot = 1,
+
+	FireModes = { GunEnums.FireMode.Semi, GunEnums.FireMode.Auto, GunEnums.FireMode.Double, GunEnums.FireMode.Cyclic },
 
 	ImpactTemplate = ReplicatedStorage.Assets.VFX.GunEffectTemplates.Default.ImpactTemplate,
 	TracerTemplate = ReplicatedStorage.Assets.VFX.GunEffectTemplates.Default.TracerTemplate,

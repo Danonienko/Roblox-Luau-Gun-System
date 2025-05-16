@@ -29,7 +29,7 @@ local function _HandleRemoved(instance: Instance): ()
 	gun:Destroy()
 end
 
-CollectionService:GetInstanceAddedSignal(Constants.GUN_TAG):Connect(_HandleAdded)
-CollectionService:GetInstanceRemovedSignal(Constants.GUN_TAG):Connect(_HandleRemoved)
+CollectionService:GetInstanceAddedSignal(Constants.Tags.GUN_TAG):Connect(_HandleAdded)
+CollectionService:GetInstanceRemovedSignal(Constants.Tags.GUN_TAG):Connect(_HandleRemoved)
 
 return {}

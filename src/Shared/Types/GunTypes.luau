@@ -1,3 +1,6 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local GunEnums = require(ReplicatedStorage.Types.Enums.GunEnums)
 export type Gun = typeof(setmetatable(
 	{} :: {
 		Tool: Tool,
@@ -17,6 +20,7 @@ export type IGun = {
 	Aim: (self: Gun) -> (),
 	Reload: (self: Gun) -> (),
 	Rest: (self: Gun) -> (),
+	ChangeFireMode: (self: Gun) -> (),
 	Destroy: (self: Gun) -> (),
 
 	Equip: (self: Gun) -> (),
@@ -35,6 +39,7 @@ export type IGun = {
 	CanReload: (self: Gun) -> boolean,
 	CanAim: (self: Gun) -> boolean,
 	CanRest: (self: Gun) -> boolean,
+	CanChangeFireMode: (self: Gun) -> boolean,
 	IsHumanoidAlive: (self: Gun) -> boolean,
 }
 
@@ -68,6 +73,8 @@ export type GunConfig = {
 	MaxAmmo: number,
 	MaxReserve: number,
 	BulletsPerShot: number,
+
+	FireModes: { GunEnums.FireMode },
 
 	ImpactTemplate: Part,
 	TracerTemplate: Part,

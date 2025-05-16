@@ -2,10 +2,12 @@
 --!native
 --!optimize 2
 
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
+local Constants = require(script.Constants)
 local EffectsController = require(script.Controllers.EffectsController)
 local Net = require(ReplicatedStorage.Modules.Net)
 local ExtractMuzzlePoint = require(script.Scripts.ExtractMuzzlePoint)
@@ -13,6 +15,7 @@ local GetDirections = require(script.Scripts.GetDirections)
 local GetRayResults = require(script.Scripts.GetRayResults)
 local Trove = require(ReplicatedStorage.Modules.Trove)
 local Remotes = require(ReplicatedStorage.Remotes)
+local GunEnums = require(ReplicatedStorage.Types.Enums.GunEnums)
 local ValidateConfig = require(script.Validation.ValidateConfig)
 local ValidateTool = require(script.Validation.ValidateTool)
 local GunTypes = require(ReplicatedStorage.Types.GunTypes)
@@ -49,6 +52,7 @@ function Gun.new(tool: Tool, gunConfig: GunTypes.GunConfig): GunTypes.Gun
 
 		Ammo = gunConfig.MaxAmmo,
 		Reserve = gunConfig.MaxReserve,
+		FireMode = gunConfig.FireModes[1],
 
 		IsShooting = false,
 		IsReloading = false,
@@ -73,6 +77,23 @@ function Gun.new(tool: Tool, gunConfig: GunTypes.GunConfig): GunTypes.Gun
 	private[self].Trove:Connect(tool.Deactivated, function()
 		self:Deactivate()
 	end)
+
+	ContextActionService:BindAction(
+		Constants.Actions.CHANGE_FIRE_MODE_ACTION,
+		function(
+			actionName: string,
+			inputState: Enum.UserInputState,
+			inputObject: InputObject
+		): Enum.ContextActionResult?
+			if inputState == Enum.UserInputState.Begin then
+				self:ChangeFireMode()
+			end
+
+			return Enum.ContextActionResult.Sink
+		end,
+		true,
+		Enum.KeyCode.V
+	)
 
 	self.EffectsController = private[self].Trove:Construct(EffectsController, self)
 
@@ -114,19 +135,29 @@ function GunMeta:PushTrigger(): ()
 		return
 	end
 
-	private[self].IsShooting = true
+	local fireMode: GunEnums.FireMode = private[self].FireMode
 
-	task.spawn(function()
+	if fireMode == GunEnums.FireMode.Semi then
+		private[self].IsShooting = true
+
+		self:Shoot()
+
+		task.delay(60 / self.Configuration.FireRate, function()
+			private[self].IsShooting = false
+		end)
+	end
+
+	if fireMode == GunEnums.FireMode.Auto then
+		private[self].IsShooting = true
+
 		while self:CanShoot() and self:IsActivated() do
 			self:Shoot()
-
-			print(`[{self.Tool.Name}]: Shot`)
 
 			task.wait(60 / self.Configuration.FireRate)
 		end
 
 		private[self].IsShooting = false
-	end)
+	end
 end
 
 function GunMeta:Aim() end
@@ -134,6 +165,27 @@ function GunMeta:Aim() end
 function GunMeta:Reload() end
 
 function GunMeta:Rest() end
+
+function GunMeta:ChangeFireMode(): ()
+	if not self:CanChangeFireMode() then
+		return
+	end
+
+	local current: GunEnums.FireMode = private[self].FireMode
+
+	local index = table.find(self.Configuration.FireModes, current)
+
+	if not index then
+		return warn(`Could not find '{current}' fire mode in configuration table`)
+	end
+
+	index += 1
+
+	private[self].FireMode = index > #self.Configuration.FireModes and self.Configuration.FireModes[1]
+		or self.Configuration.FireModes[index]
+
+	print(`[{self.Tool.Name}]: Changed fire mode from '{current}' to '{private[self].FireMode}'`)
+end
 
 function GunMeta:Equip(): ()
 	if private[self].IsEquipped then
@@ -230,8 +282,16 @@ function GunMeta:CanRest(): boolean
 	return self:IsHumanoidAlive() and self:IsEquipped()
 end
 
+function GunMeta:CanChangeFireMode(): boolean
+	return self:IsHumanoidAlive() and self:IsEquipped() and not self:IsActivated() and not self:IsReloading()
+end
+
 function GunMeta:Destroy(): ()
 	self:Unequip()
+
+	for key: string, value: string in pairs(Constants.Actions) do
+		ContextActionService:UnbindAction(value)
+	end
 
 	private[self].Trove:Destroy()
 

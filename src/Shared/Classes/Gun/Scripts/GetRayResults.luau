@@ -10,7 +10,7 @@ local Constants = require(ReplicatedStorage.Classes.Gun.Constants)
 local GunTypes = require(ReplicatedStorage.Types.GunTypes)
 
 return function(player: Player, origin: Vector3, directions: { Vector3 }): { GunTypes.RayResult }
-	local exclude: { Instance } = CollectionService:GetTagged(Constants.RAY_EXCLUDE_TAG)
+	local exclude: { Instance } = CollectionService:GetTagged(Constants.Tags.RAY_EXCLUDE_TAG)
 
 	if player.Character then
 		table.insert(exclude, player.Character)

@@ -1,5 +1,5 @@
 --!strict
 
-return {
+return table.freeze({
 	Default = require(script.Default),
-}
+})

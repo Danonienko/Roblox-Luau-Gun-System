@@ -3,6 +3,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local t = require(ReplicatedStorage.Modules.t)
+local GunEnums = require(ReplicatedStorage.Types.Enums.GunEnums)
 
 local isGunConfigInterface = t.strictInterface({
 	Damage = t.number,
@@ -14,6 +15,8 @@ local isGunConfigInterface = t.strictInterface({
 	MaxAmmo = t.number,
 	MaxReserve = t.number,
 	BulletsPerShot = t.number,
+
+	FireModes = t.array(t.keyOf(GunEnums.FireMode)),
 
 	ImpactTemplate = t.instanceIsA("Part"),
 	TracerTemplate = t.instanceIsA("Part"),
